@@ -544,6 +544,12 @@ function selectTool(toolName) {
 document.addEventListener("DOMContentLoaded", () => {
     registerExistingTools();
 
+    // Open a tool directly when a visitor arrives from a tool landing page.
+    const requestedTool = new URLSearchParams(window.location.search).get("tool");
+    if (requestedTool && Object.prototype.hasOwnProperty.call(toolSettings, requestedTool)) {
+        selectTool(requestedTool);
+    }
+
     const searchInput = document.getElementById("searchInput");
 
     if (searchInput) {
