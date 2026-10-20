@@ -525,7 +525,12 @@ function selectTool(toolName) {
                 : "";
 
             const context = { pageRanges };
-            if (isCompress) context.compressionPreset = workspace.querySelector("#compressionPreset").value;
+            if (isCompress) {
+                context.compressionPreset = workspace.querySelector("#compressionPreset").value;
+                context.onProgress = (page, total) => {
+                    status.textContent = `Compressing page ${page} of ${total}...`;
+                };
+            }
             const result = await tool.process(files, context);
 
             if (result && result.blob instanceof Blob && result.filename) {
