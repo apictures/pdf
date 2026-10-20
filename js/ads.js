@@ -103,33 +103,73 @@
         const container = document.getElementById("freepdf-test-display-ad");
         if (!container) return;
 
-        // Create GPT's command queue before its async script finishes loading.
+        const showStatus = message => {
+            container.textContent = message;
+            container.style.cssText = "width:100%;min-height:250px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;box-sizing:border-box;color:#697386;font-size:12px;overflow-wrap:anywhere;";
+        };
+
+        // If GPT never runs its command queue, do not leave a permanent spinner.
+        let gptInitialized = false;
+        const watchdog = window.setTimeout(() => {
+            if (!gptInitialized) {
+                showStatus("Google's ad script did not initialize. Check the browser console/network, disable ad blockers for localhost, and reload.");
+                console.warn("[FreePDF ads] GPT did not initialize within 8 seconds. The GPT script may be blocked or unreachable.");
+            }
+        }, 8000);
+
+        const gptScript = document.querySelector('script[src*="securepubads.g.doubleclick.net/tag/js/gpt.js"]');
+        if (gptScript) {
+            gptScript.addEventListener("error", () => {
+                window.clearTimeout(watchdog);
+                showStatus("Google's GPT script failed to load. Check your internet connection, browser ad blocker, DNS, or network filtering.");
+                console.error("[FreePDF ads] Failed to load GPT script.");
+            }, { once: true });
+        }
+
+        // Initialize the command queue before the async GPT script finishes loading.
         window.googletag = window.googletag || { cmd: [] };
         window.googletag.cmd = window.googletag.cmd || [];
         window.googletag.cmd.push(() => {
+            gptInitialized = true;
+            window.clearTimeout(watchdog);
+
             if (container.dataset.gptInitialized === "true") return;
             container.dataset.gptInitialized = "true";
 
             // Google's documented GPT sample inventory for testing.
-            const slot = window.googletag
-                .defineSlot("/6355419/Travel/Europe/France/Paris", [300, 250], "freepdf-test-display-ad");
+            const slot = window.googletag.defineSlot(
+                "/6355419/Travel/Europe/France/Paris",
+                [300, 250],
+                "freepdf-test-display-ad"
+            );
 
             if (!slot) {
-                container.textContent = "Test ad slot could not be created.";
+                showStatus("GPT loaded, but the test ad slot could not be created. Check the browser console.");
+                console.error("[FreePDF ads] googletag.defineSlot returned null.");
                 return;
             }
 
-            slot.addService(window.googletag.pubads());
-            window.googletag.pubads().addEventListener("slotRenderEnded", event => {
+            const pubads = window.googletag.pubads();
+            pubads.addEventListener("slotRenderEnded", event => {
                 if (event.slot !== slot) return;
                 if (event.isEmpty) {
-                    container.textContent = "Google test ad did not fill. The rest of FreePDF should still work.";
-                    container.style.cssText = "width:100%;min-height:250px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;box-sizing:border-box;color:#697386;font-size:12px;";
+                    showStatus("Google GPT loaded, but this test request returned no ad. Check the Network tab and Google Publisher Console.");
+                    console.warn("[FreePDF ads] GPT slot rendered empty.", event);
+                } else {
+                    console.info("[FreePDF ads] GPT test ad rendered successfully.");
                 }
             });
-            window.googletag.pubads().collapseEmptyDivs();
+
+            pubads.addEventListener("slotOnload", event => {
+                if (event.slot === slot) {
+                    console.info("[FreePDF ads] GPT ad iframe loaded.");
+                }
+            });
+
+            pubads.collapseEmptyDivs();
             window.googletag.enableServices();
             window.googletag.display("freepdf-test-display-ad");
+            console.info("[FreePDF ads] GPT initialized; requesting the documented sample test slot.");
         });
     }
 
