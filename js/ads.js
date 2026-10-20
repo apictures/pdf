@@ -1,14 +1,12 @@
 /* =========================================================
-   FreePDF — Shared download + ad test harness
-   TEST MODE: display ads use Google's GPT sample test inventory.
-   Rewarded ads are simulated locally until a Google Ad Manager
-   rewarded inventory/ad unit is configured. Downloads never block.
+   FreePDF — Shared download handler
+   No ad provider is configured. Downloads run directly without an ad.
    ========================================================= */
 (function () {
     "use strict";
 
     const FALLBACK_MS = 10000;
-    const TEST_MODE = true;
+    const TEST_MODE = false;
     let rewardedAdProvider = null;
     let testModal = null;
     let testResolve = null;
