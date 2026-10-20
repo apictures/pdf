@@ -205,7 +205,7 @@ nav a:hover {
 }
 
 .sidebar {
-    flex: 0 0 250px;
+    flex: 0 0 340px;
     min-width: 0;
     padding: 16px;
     border: 1px solid rgba(226, 230, 239, 0.8);
@@ -428,7 +428,7 @@ textarea:focus-visible {
     }
 
     .sidebar {
-        flex-basis: 220px;
+        flex-basis: 320px;
     }
 
     .tools-grid {
@@ -468,7 +468,7 @@ textarea:focus-visible {
     }
 
     .sidebar {
-        flex-basis: 190px;
+        flex-basis: 300px;
         padding: 12px;
     }
 
