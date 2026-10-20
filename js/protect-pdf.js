@@ -107,9 +107,9 @@
 
         const outputBytes = await pdf.save();
 
-        downloadPdf(
-            outputBytes,
-            file.name.replace(/\.pdf$/i, "") + "-protected.pdf"
-        );
+        return {
+            blob: new Blob([outputBytes], { type: "application/pdf" }),
+            filename: file.name.replace(/\.pdf$/i, "") + "-protected.pdf"
+        };
     };
 })();
