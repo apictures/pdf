@@ -101,8 +101,10 @@
 
     function initializeTestDisplayAd() {
         const container = document.getElementById("freepdf-test-display-ad");
-        if (!container || !window.googletag) return;
+        if (!container) return;
 
+        // Create GPT's command queue before its async script finishes loading.
+        window.googletag = window.googletag || { cmd: [] };
         window.googletag.cmd = window.googletag.cmd || [];
         window.googletag.cmd.push(() => {
             if (container.dataset.gptInitialized === "true") return;
@@ -121,7 +123,8 @@
             window.googletag.pubads().addEventListener("slotRenderEnded", event => {
                 if (event.slot !== slot) return;
                 if (event.isEmpty) {
-                    container.innerHTML = '<div class="freepdf-ad-fallback">Google test ad did not fill. The rest of FreePDF should still work.</div>';
+                    container.textContent = "Google test ad did not fill. The rest of FreePDF should still work.";
+                    container.style.cssText = "width:100%;min-height:250px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;box-sizing:border-box;color:#697386;font-size:12px;";
                 }
             });
             window.googletag.pubads().collapseEmptyDivs();
