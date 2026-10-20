@@ -103,9 +103,16 @@
         const container = document.getElementById("freepdf-test-display-ad");
         if (!container) return;
 
+        const status = document.getElementById("freepdf-test-display-ad-status");
         const showStatus = message => {
-            container.textContent = message;
-            container.style.cssText = "width:100%;min-height:250px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;box-sizing:border-box;color:#697386;font-size:12px;overflow-wrap:anywhere;";
+            if (status) {
+                status.textContent = message;
+                status.style.display = "block";
+            }
+            console.info("[FreePDF ads] " + message);
+        };
+        const hideStatus = () => {
+            if (status) status.style.display = "none";
         };
 
         // If GPT never runs its command queue, do not leave a permanent spinner.
@@ -136,7 +143,9 @@
             if (container.dataset.gptInitialized === "true") return;
             container.dataset.gptInitialized = "true";
 
-            // Google's documented GPT sample inventory for testing.
+            // Register the slot with PubAds before enabling services. Without
+            // addService(pubads), GPT has no registered slot to request/render.
+            const pubads = window.googletag.pubads();
             const slot = window.googletag.defineSlot(
                 "/6355419/Travel/Europe/France/Paris",
                 [300, 250],
@@ -149,7 +158,7 @@
                 return;
             }
 
-            const pubads = window.googletag.pubads();
+            slot.addService(pubads);
             let renderResponseReceived = false;
             let renderWatchdog = null;
 
@@ -162,12 +171,14 @@
                     showStatus("Google GPT responded, but this test request returned no ad. Check the Network tab for gampad/ads requests.");
                     console.warn("[FreePDF ads] GPT slot rendered empty.", event);
                 } else {
+                    hideStatus();
                     console.info("[FreePDF ads] GPT test ad rendered successfully.");
                 }
             });
 
             pubads.addEventListener("slotOnload", event => {
                 if (event.slot === slot) {
+                    hideStatus();
                     console.info("[FreePDF ads] GPT ad iframe loaded.");
                 }
             });
