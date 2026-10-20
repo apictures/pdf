@@ -342,6 +342,13 @@ main h2 {
 }
 
 .tool-card {
+    display: block;
+    width: 100%;
+    color: inherit;
+    text-align: left;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     min-width: 0;
     padding: 20px;
     overflow-wrap: anywhere;
