@@ -24,6 +24,8 @@
             if (!file) throw new Error("Please select a PDF file.");
             if (!window.pdfjsLib) throw new Error("PDF.js did not load. Refresh the page and try again.");
             if (!window.jspdf || typeof window.jspdf.jsPDF !== "function") throw new Error("The PDF output library did not load. Refresh the page and try again.");
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+                "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
             const preset = presets[context.compressionPreset] || presets.balanced;
             let pdf;
             try {
@@ -60,6 +62,17 @@
             }
             const blob = doc.output("blob");
             if (!blob || !blob.size) throw new Error("Compression did not produce a valid PDF.");
+            let verification;
+            try {
+                verification = await window.pdfjsLib.getDocument({ data: new Uint8Array(await blob.arrayBuffer()) }).promise;
+                if (verification.numPages !== pdf.numPages) {
+                    throw new Error("The output page count does not match the original.");
+                }
+                await verification.destroy();
+            } catch (error) {
+                throw new Error("The generated PDF failed validation. Please try a different compression setting.");
+            }
+            await pdf.destroy();
             const difference = file.size ? Math.round((1 - blob.size / file.size) * 100) : 0;
             let message = "Created " + formatBytes(blob.size) + " from " + formatBytes(file.size) + ". ";
             message += difference > 0 ? "File size reduced by about " + difference + "%." : "This file did not get smaller; try Smallest file.";
