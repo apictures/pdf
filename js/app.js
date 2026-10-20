@@ -338,6 +338,19 @@ function updateSplitSelection(workspace) {
         processButton.disabled ? "0.6" : "1";
 }
 
+function formatFileSize(bytes) {
+    if (!Number.isFinite(bytes) || bytes < 0) return "";
+    if (bytes < 1024) return `${bytes} B`;
+    const units = ["KB", "MB", "GB"];
+    let value = bytes / 1024;
+    let unit = units[0];
+    for (let i = 1; value >= 1024 && i < units.length; i++) {
+        value /= 1024;
+        unit = units[i];
+    }
+    return `${value.toFixed(value >= 10 ? 0 : 1)} ${unit}`;
+}
+
 /* ---------------------------------------------------------
    Open a tool workspace.
    --------------------------------------------------------- */
@@ -388,7 +401,14 @@ function selectTool(toolName) {
         <h2></h2>
         <p id="toolDescription" style="margin:12px 0 18px;color:#666"></p>
 
-        <input id="toolFilePicker" type="file">
+        <div id="fileDropzone" class="file-dropzone" role="button" tabindex="0" aria-controls="toolFilePicker" aria-label="Choose files or drop files here">
+            <input id="toolFilePicker" class="file-input-hidden" type="file">
+            <div class="file-dropzone-icon" aria-hidden="true"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <p class="file-dropzone-title">Drag and drop your file here</p>
+            <p class="file-dropzone-hint">or choose a file from your device</p>
+            <button id="browseFilesButton" class="file-browse-button" type="button">Browse files</button>
+            <p class="file-dropzone-formats">Your files are processed in your browser.</p>
+        </div>
 
         <div id="compressControls" style="display:none;margin:16px 0;padding:14px;border:1px solid #e2e6ef;border-radius:9px">
             <label for="compressionPreset" style="display:block;font-weight:600;margin-bottom:8px">Compression setting</label>
@@ -436,10 +456,58 @@ function selectTool(toolName) {
     workspace.querySelector("#toolDescription").textContent = description;
 
     const picker = workspace.querySelector("#toolFilePicker");
+    const dropzone = workspace.querySelector("#fileDropzone");
+    const browseButton = workspace.querySelector("#browseFilesButton");
     const compressControls = workspace.querySelector("#compressControls");
     if (compressControls) compressControls.style.display = isCompress ? "block" : "none";
     picker.accept = settings.accept;
     picker.multiple = settings.multiple;
+    dropzone.setAttribute("aria-label", settings.multiple
+        ? "Choose files or drop files here"
+        : "Choose a file or drop a file here");
+    workspace.querySelector(".file-dropzone-title").textContent =
+        settings.multiple ? "Drag and drop your files here" : "Drag and drop your file here";
+    workspace.querySelector(".file-dropzone-hint").textContent =
+        settings.multiple ? "or choose multiple files from your device" : "or choose a file from your device";
+
+    dropzone.addEventListener("click", event => {
+        if (event.target.closest("#browseFilesButton")) return;
+        picker.click();
+    });
+    dropzone.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            picker.click();
+        }
+    });
+    browseButton.addEventListener("click", event => {
+        event.stopPropagation();
+        picker.click();
+    });
+    ["dragenter", "dragover"].forEach(eventName => {
+        dropzone.addEventListener(eventName, event => {
+            event.preventDefault();
+            event.stopPropagation();
+            dropzone.classList.add("is-dragover");
+        });
+    });
+    ["dragleave", "dragend"].forEach(eventName => {
+        dropzone.addEventListener(eventName, event => {
+            event.preventDefault();
+            dropzone.classList.remove("is-dragover");
+        });
+    });
+    dropzone.addEventListener("drop", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropzone.classList.remove("is-dragover");
+        const droppedFiles = Array.from(event.dataTransfer?.files || []);
+        if (!droppedFiles.length) return;
+        const transfer = new DataTransfer();
+        droppedFiles.forEach(file => transfer.items.add(file));
+        picker.files = transfer.files;
+        picker.dispatchEvent(new Event("change", { bubbles: true }));
+    });
 
     const processButton =
         workspace.querySelector("#processToolButton");
@@ -452,9 +520,35 @@ function selectTool(toolName) {
     picker.addEventListener("change", async () => {
         const files = Array.from(picker.files);
 
-        fileInfo.textContent = files.length
-            ? files.map(file => file.name).join(", ")
-            : "";
+        fileInfo.innerHTML = "";
+        fileInfo.classList.toggle("has-files", files.length > 0);
+        if (files.length) {
+            const heading = document.createElement("strong");
+            heading.className = "selected-files-heading";
+            heading.textContent = files.length === 1 ? "Selected file" : `Selected files (${files.length})`;
+            const list = document.createElement("ul");
+            list.className = "selected-files-list";
+            files.forEach(file => {
+                const item = document.createElement("li");
+                const name = document.createElement("span");
+                name.textContent = file.name;
+                const size = document.createElement("small");
+                size.textContent = formatFileSize(file.size);
+                item.append(name, size);
+                list.appendChild(item);
+            });
+            fileInfo.append(heading, list);
+            dropzone.classList.add("has-selection");
+            workspace.querySelector(".file-dropzone-title").textContent =
+                files.length === 1 ? "File ready to process" : `${files.length} files ready to process`;
+            workspace.querySelector(".file-dropzone-hint").textContent = "Choose Browse files to replace your selection.";
+        } else {
+            dropzone.classList.remove("has-selection");
+            workspace.querySelector(".file-dropzone-title").textContent =
+                settings.multiple ? "Drag and drop your files here" : "Drag and drop your file here";
+            workspace.querySelector(".file-dropzone-hint").textContent =
+                settings.multiple ? "or choose multiple files from your device" : "or choose a file from your device";
+        }
 
         processButton.disabled = files.length === 0;
         processButton.style.opacity =
