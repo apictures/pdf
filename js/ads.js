@@ -148,7 +148,7 @@
             const pubads = window.googletag.pubads();
             const slot = window.googletag.defineSlot(
                 "/6355419/Travel/Europe/France/Paris",
-                [300, 250],
+                [300, 600],
                 "freepdf-test-display-ad"
             );
 
