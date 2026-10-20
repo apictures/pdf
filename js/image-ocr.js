@@ -136,20 +136,21 @@
         downloadButton.textContent = "Download TXT";
         downloadButton.style.marginLeft = "8px";
 
-        downloadButton.addEventListener("click", () => {
-            const blob = new Blob([textarea.value], {
-                type: "text/plain;charset=utf-8"
-            });
-
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-
-            link.href = url;
-            link.download =
-                originalName.replace(/\.[^.]+$/, "") + "-ocr.txt";
-
-            link.click();
-            URL.revokeObjectURL(url);
+        downloadButton.addEventListener("click", async () => {
+            const blob = new Blob([textarea.value], { type: "text/plain;charset=utf-8" });
+            const filename = originalName.replace(/\.[^.]+$/, "") + "-ocr.txt";
+            if (window.PDFConverterAds?.downloadFile) {
+                await window.PDFConverterAds.downloadFile(blob, filename);
+            } else {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }
         });
 
         panel.append(heading, textarea, copyButton, downloadButton);
