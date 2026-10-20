@@ -504,9 +504,18 @@ function selectTool(toolName) {
                 ? selectedPagesToRanges([...selectedSplitPages])
                 : "";
 
-            await tool.process(files, { pageRanges });
+            const result = await tool.process(files, { pageRanges });
 
-            status.textContent = "Processing finished.";
+            if (result && result.blob instanceof Blob && result.filename) {
+                if (!window.PDFConverterAds || typeof window.PDFConverterAds.downloadFile !== "function") {
+                    throw new Error("The shared download handler did not load. Please refresh the page.");
+                }
+                await window.PDFConverterAds.downloadFile(result.blob, result.filename);
+                status.textContent = `Processing finished. Downloading ${result.filename}...`;
+            } else {
+                // Tools such as OCR display their result in the workspace instead of returning a file.
+                status.textContent = "Processing finished.";
+            }
         } catch (error) {
             console.error(`${toolName} failed:`, error);
             status.textContent =
