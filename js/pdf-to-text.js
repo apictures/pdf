@@ -61,17 +61,7 @@
                 type: "text/plain;charset=utf-8"
             });
 
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-
-            link.href = url;
-            link.download = file.name.replace(/\.pdf$/i, "") + ".txt";
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            return { blob, filename: file.name.replace(/\.pdf$/i, "") + ".txt" };
         }
     });
 })();

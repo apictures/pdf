@@ -125,7 +125,7 @@
                     ".pdf"
                 );
 
-                pdf.save(outputName);
+                return { blob: pdf.output("blob"), filename: outputName };
 
             } catch (error) {
                 console.error("PowerPoint to PDF error:", error);

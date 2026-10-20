@@ -218,7 +218,7 @@
             cardHeight
         );
 
-        pdf.save("id-card-dual-side.pdf");
+        return { blob: pdf.output("blob"), filename: "id-card-dual-side.pdf" };
     }
 
     app.registerTool({

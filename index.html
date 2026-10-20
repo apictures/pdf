@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PDF Converter</title>
-
-    <!-- CSS -->
+    <title>Free PDF Converter Online – Merge, Split &amp; Convert | FreePDF</title>
+    <meta name="description" content="Free online PDF tools for merging, splitting, and converting files in your browser. Your files stay on your device during supported browser-based processing.">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://apictures.github.io/pdf/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Free PDF Converter Online | FreePDF">
+    <meta property="og:description" content="Convert, merge, split, and manage PDFs in your browser. Your Files. Your Device. Your Privacy.">
+    <meta property="og:url" content="https://apictures.github.io/pdf/">
+<!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
 
     <!-- Font Awesome Icons -->
@@ -15,25 +21,28 @@
 
 <header>
     <div class="logo">
-        <div class="logo-icon">
+        <div class="logo-icon" aria-hidden="true">
             <i class="fa-solid fa-file-pdf"></i>
-            <h2>PDF Converter</h2>
-            <p>Convert. Edit. Manage. Anywhere.</p>
+        </div>
+        <div class="logo-copy">
+            <h2>FreePDF</h2>
+            <p>Your Files. Your Device. Your Privacy.</p>
         </div>
     </div>
 
     <nav>
-        <a href="#">Home</a>
-        <a href="#">Tools</a>
-        <a href="#">About</a>
-        <a href="#">Blog</a>
-        <a href="#">Contact</a>
+        <a href="index.html">Home</a>
+        <a href="#tools">Tools</a>
+        <a href="about.html">About</a>
+        <a href="blog.html">Blog</a>
+        <a href="contact.html">Contact</a>
     </nav>
 </header>
 
 <section class="hero">
-    <h1>All Your PDF Tools in One Place</h1>
-    <p>Convert, Edit, Merge and Manage your PDF files easily.</p>
+    <h1>Free PDF Converter Online</h1>
+    <p class="privacy-slogan"><strong>Your Files. Your Device. Your Privacy.</strong></p>
+    <p>Convert supported files to and from PDF, merge or split PDFs, extract text, and manage documents online with FreePDF. Supported file processing runs in your browser, not on a FreePDF file-processing server.</p>
 
     <div class="search-box">
         <input
@@ -48,25 +57,18 @@
 </section>
 
 <div class="container">
-
-    <!-- Left Sidebar -->
-
-<!-- Left Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-ad">
-         <span class="ad-label">Advertisement</span>
-
+    <aside class="sidebar" aria-label="Reserved banner advertising area">
+        <div class="sidebar-ad">
+            <span class="ad-label">Ad space</span>
             <div class="ad-placeholder">
-            <i class="fa-solid fa-rectangle-ad"></i>
-            <p>Advertisement</p>
-            <small>Ad space</small>
+                <i class="fa-regular fa-rectangle-ad" aria-hidden="true"></i>
+                <p>Banner placement reserved</p>
+                <small>No ads are currently being served.</small>
+            </div>
         </div>
-     </div>
     </aside>
-
-
-    <!-- Main Content -->
-    <main>
+<!-- Main Content -->
+    <main id="tools">
 
         <h2>Popular PDF Tools</h2>
 
@@ -99,6 +101,12 @@
                 <div class="icon">✂️</div>
                 <h3>Split PDF</h3>
                 <p>Split PDF into separate files.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('Compress PDF')">
+                <div class="icon">🗜️</div>
+                <h3>Compress PDF</h3>
+                <p>Reduce PDF file size with adjustable image quality.</p>
             </div>
 
             <div class="tool-card" onclick="selectTool('Excel to PDF')">
@@ -150,13 +158,27 @@
             </div>
         </div>
 
+        <section class="tool-guides" aria-labelledby="toolGuidesHeading" style="margin-top:32px">
+            <h2 id="toolGuidesHeading">PDF Tool Guides</h2>
+            <p>Learn how to use our most popular tools:</p>
+            <ul>
+                <li><a href="merge-pdf.html">Merge PDF files online</a></li>
+                <li><a href="pdf-to-word.html">Convert PDF to Word</a></li>
+                <li><a href="split-pdf.html">Split PDF files online</a></li>
+                <li><a href="jpg-to-pdf.html">Convert JPG images to PDF</a></li>
+                <li><a href="pdf-to-excel.html">Convert PDF tables to Excel</a></li>
+                <li><a href="compress-pdf.html">Compress PDF files online</a></li>
+            </ul>
+        </section>
+
     </main>
 
 </div>
 
 <!-- Footer -->
 <footer>
-    <p>&copy; 2023 PDF Converter. All rights reserved.</p>
+    <p>&copy; 2026 FreePDF. All rights reserved.</p>
+    <p><a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a> · <a href="about.html">About</a> · <a href="contact.html">Contact</a> · <a href="sitemap.html">Site Map</a></p>
 </footer>
 
 <!-- JavaScript -->
@@ -188,6 +210,7 @@
 <!-- Tool modules -->
 <script src="js/merge-pdf.js"></script>
 <script src="js/split-pdf.js"></script>
+<script src="js/compress-pdf.js"></script>
 <script src="js/pdf-to-text.js"></script>
 <script src="js/jpg-to-pdf.js"></script>
 <script src="js/word-to-pdf.js"></script>
@@ -201,6 +224,7 @@
 <script src="js/image-ocr.js"></script>
 
 <!-- Main controller must load last -->
+<script src="js/ads.js"></script>
 <script src="js/app.js"></script>
 
 

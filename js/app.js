@@ -33,6 +33,11 @@ const toolSettings = {
         multiple: false,
         action: "Extract Selected Pages"
     },
+    "Compress PDF": {
+        accept: ".pdf,application/pdf",
+        multiple: false,
+        action: "Compress PDF"
+    },
     "Excel to PDF": {
         accept: ".xls,.xlsx,.csv",
         multiple: false,
@@ -370,17 +375,30 @@ function selectTool(toolName) {
     }
 
     const isSplit = toolName === "Split PDF";
+    const isCompress = toolName === "Compress PDF";
     const description = isSplit
         ? "Choose a PDF, then select the pages you want to extract."
-        : settings.multiple
-            ? "Choose the files to process."
-            : "Choose the file to process.";
+        : isCompress
+            ? "Reduce PDF file size locally in your browser. Pages are rebuilt as images, so text search and interactive elements may not be preserved."
+            : settings.multiple
+                ? "Choose the files to process."
+                : "Choose the file to process.";
 
     workspace.innerHTML = `
         <h2></h2>
         <p id="toolDescription" style="margin:12px 0 18px;color:#666"></p>
 
         <input id="toolFilePicker" type="file">
+
+        <div id="compressControls" style="display:none;margin:16px 0;padding:14px;border:1px solid #e2e6ef;border-radius:9px">
+            <label for="compressionPreset" style="display:block;font-weight:600;margin-bottom:8px">Compression setting</label>
+            <select id="compressionPreset" style="max-width:100%;padding:10px;border:1px solid #cbd2df;border-radius:7px">
+                <option value="balanced">Balanced — recommended</option>
+                <option value="smaller">Smallest file — lower image quality</option>
+                <option value="quality">Higher quality — may be a larger file</option>
+            </select>
+            <p style="font-size:13px;line-height:1.5;margin:9px 0 0;color:#666">Pages are rasterized to images. Searchable text, links, forms, and signatures may not be preserved.</p>
+        </div>
 
         <p id="workspaceFiles"
            style="margin:12px 0;overflow-wrap:anywhere"></p>
@@ -418,6 +436,8 @@ function selectTool(toolName) {
     workspace.querySelector("#toolDescription").textContent = description;
 
     const picker = workspace.querySelector("#toolFilePicker");
+    const compressControls = workspace.querySelector("#compressControls");
+    if (compressControls) compressControls.style.display = isCompress ? "block" : "none";
     picker.accept = settings.accept;
     picker.multiple = settings.multiple;
 
@@ -504,9 +524,20 @@ function selectTool(toolName) {
                 ? selectedPagesToRanges([...selectedSplitPages])
                 : "";
 
-            await tool.process(files, { pageRanges });
+            const context = { pageRanges };
+            if (isCompress) context.compressionPreset = workspace.querySelector("#compressionPreset").value;
+            const result = await tool.process(files, context);
 
-            status.textContent = "Processing finished.";
+            if (result && result.blob instanceof Blob && result.filename) {
+                if (!window.PDFConverterAds || typeof window.PDFConverterAds.downloadFile !== "function") {
+                    throw new Error("The shared download handler did not load. Please refresh the page.");
+                }
+                await window.PDFConverterAds.downloadFile(result.blob, result.filename);
+                status.textContent = result.message || `Processing finished. Downloading ${result.filename}...`;
+            } else {
+                // Tools such as OCR display their result in the workspace instead of returning a file.
+                status.textContent = "Processing finished.";
+            }
         } catch (error) {
             console.error(`${toolName} failed:`, error);
             status.textContent =
@@ -534,6 +565,12 @@ function selectTool(toolName) {
 
 document.addEventListener("DOMContentLoaded", () => {
     registerExistingTools();
+
+    // Open a tool directly when a visitor arrives from a tool landing page.
+    const requestedTool = new URLSearchParams(window.location.search).get("tool");
+    if (requestedTool && Object.prototype.hasOwnProperty.call(toolSettings, requestedTool)) {
+        selectTool(requestedTool);
+    }
 
     const searchInput = document.getElementById("searchInput");
 

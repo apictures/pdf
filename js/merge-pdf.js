@@ -28,14 +28,5 @@ async function mergePDFs(files) {
         type: "application/pdf"
     });
 
-    const downloadUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = downloadUrl;
-    link.download = "merged.pdf";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+    return { blob, filename: "merged.pdf" };
 }

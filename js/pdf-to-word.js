@@ -152,17 +152,7 @@
                 mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             });
 
-            const url = URL.createObjectURL(docxBlob);
-            const link = document.createElement("a");
-
-            link.href = url;
-            link.download = file.name.replace(/\.pdf$/i, "") + ".docx";
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            return { blob: docxBlob, filename: file.name.replace(/\.pdf$/i, "") + ".docx" };
         }
     });
 })();

@@ -241,7 +241,7 @@
                     .trim()
                 : "scanned-document";
 
-            pdf.save(`${outputName || "scanned-document"}.pdf`);
+            return { blob: pdf.output("blob"), filename: `${outputName || "scanned-document"}.pdf` };
         }
     });
 })();
