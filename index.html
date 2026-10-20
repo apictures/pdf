@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Converter</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon">
+            <i class="fa-solid fa-file-pdf"></i>
+            <h2>PDF Converter</h2>
+            <p>Convert. Edit. Manage. Anywhere.</p>
+        </div>
+    </div>
+
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Tools</a>
+        <a href="#">About</a>
+        <a href="#">Blog</a>
+        <a href="#">Contact</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>All Your PDF Tools in One Place</h1>
+    <p>Convert, Edit, Merge and Manage your PDF files easily.</p>
+
+    <div class="search-box">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search tools (e.g. PDF to Word)"
+        >
+        <button onclick="searchTool()">
+            Search
+        </button>
+    </div>
+</section>
+
+<div class="container">
+
+    <!-- Left Sidebar -->
+
+<!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-ad">
+         <span class="ad-label">Advertisement</span>
+
+            <div class="ad-placeholder">
+            <i class="fa-solid fa-rectangle-ad"></i>
+            <p>Advertisement</p>
+            <small>Ad space</small>
+        </div>
+     </div>
+    </aside>
+
+
+    <!-- Main Content -->
+    <main>
+
+        <h2>Popular PDF Tools</h2>
+
+        <div class="tools-grid">
+            <div class="tool-card" onclick="selectTool('PDF to Word')">
+                <div class="icon">📄</div>
+                <h3>PDF to Word</h3>
+                <p>Convert PDF into editable Word documents.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('Word to PDF')">
+                <div class="icon">📝</div>
+                <h3>Word to PDF</h3>
+                <p>Convert Word files into PDFs.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('JPG to PDF')">
+                <div class="icon">🖼️</div>
+                <h3>JPG to PDF</h3>
+                <p>Convert images into PDF files.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('Merge PDF')">
+                <div class="icon">📚</div>
+                <h3>Merge PDF</h3>
+                <p>Combine multiple PDF files.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('Split PDF')">
+                <div class="icon">✂️</div>
+                <h3>Split PDF</h3>
+                <p>Split PDF into separate files.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('Excel to PDF')">
+                <div class="icon">📊</div>
+                <h3>Excel to PDF</h3>
+                <p>Convert Excel files into PDFs.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('PowerPoint to PDF')">
+                <div class="icon">📊</div>
+                <h3>PowerPoint to PDF</h3>
+                <p>Convert PowerPoint files into PDFs.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('PDF to Excel')">
+                <div class="icon">📊</div>
+                <h3>PDF to Excel</h3>
+                <p>Convert PDF files into Excel.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('PDF to Text')">
+                <div class="icon">📄</div>
+                <h3>PDF to Text</h3>
+                <p>Extract text from PDF files.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('Protect/Lock PDF')">
+                <div class="icon">🔒</div>
+                <h3>Protect/Lock PDF</h3>
+                <p>Protect your PDF files.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('Image OCR')">
+                <div class="icon">🤖</div>
+                <h3>Image OCR</h3>
+                <p>Convert images into editable text.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('Doc Scanner')">
+                <div class="icon">📷</div>
+                <h3>Doc Scanner</h3>
+                <p>Scan documents and convert to PDF.</p>
+            </div>
+
+            <div class="tool-card" onclick="selectTool('ID Card Dual Side')">
+                <div class="icon">💳</div>
+                <h3>ID Card Dual Side</h3>
+                <p>Convert dual-sided ID cards into PDFs.</p>
+            </div>
+        </div>
+
+    </main>
+
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2023 PDF Converter. All rights reserved.</p>
+</footer>
+
+<!-- JavaScript -->
+
+
+<!-- PDF libraries -->
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- Word conversion dependencies: order matters -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://unpkg.com/docx-preview@0.3.6/dist/docx-preview.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+
+<!-- Excel conversion dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+
+<!-- pdf protect and OCR dependencies -->
+ <script src="https://unpkg.com/@cantoo/pdf-lib@2.11.1/dist/pdf-lib.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+
+<!-- Tool registry -->
+<script src="js/tool-registry.js"></script>
+
+<!-- Tool modules -->
+<script src="js/merge-pdf.js"></script>
+<script src="js/split-pdf.js"></script>
+<script src="js/pdf-to-text.js"></script>
+<script src="js/jpg-to-pdf.js"></script>
+<script src="js/word-to-pdf.js"></script>
+<script src="js/pdf-to-word.js"></script>
+<script src="js/excel-to-pdf.js"></script>
+<script src="js/powerpoint-to-pdf.js"></script>
+<script src="js/pdf-to-excel.js"></script>
+<script src="js/doc-scanner.js"></script>
+<script src="js/id-card-dual-side.js"></script>
+<script src="js/protect-pdf.js"></script>
+<script src="js/image-ocr.js"></script>
+
+<!-- Main controller must load last -->
+<script src="js/app.js"></script>
+
+
+</body>
+</html>
