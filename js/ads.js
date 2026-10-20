@@ -150,10 +150,16 @@
             }
 
             const pubads = window.googletag.pubads();
+            let renderResponseReceived = false;
+            let renderWatchdog = null;
+
             pubads.addEventListener("slotRenderEnded", event => {
                 if (event.slot !== slot) return;
+                renderResponseReceived = true;
+                if (renderWatchdog !== null) window.clearTimeout(renderWatchdog);
+
                 if (event.isEmpty) {
-                    showStatus("Google GPT loaded, but this test request returned no ad. Check the Network tab and Google Publisher Console.");
+                    showStatus("Google GPT responded, but this test request returned no ad. Check the Network tab for gampad/ads requests.");
                     console.warn("[FreePDF ads] GPT slot rendered empty.", event);
                 } else {
                     console.info("[FreePDF ads] GPT test ad rendered successfully.");
@@ -168,6 +174,16 @@
 
             pubads.collapseEmptyDivs();
             window.googletag.enableServices();
+
+            // Also detect a request that never produces a render event. The earlier
+            // watchdog only covers GPT initialization, not the ad response itself.
+            renderWatchdog = window.setTimeout(() => {
+                if (!renderResponseReceived) {
+                    showStatus("GPT initialized, but no ad render response arrived within 12 seconds. Check Network for gampad/ads requests and blocked requests.");
+                    console.warn("[FreePDF ads] No slotRenderEnded event received within 12 seconds.");
+                }
+            }, 12000);
+
             window.googletag.display("freepdf-test-display-ad");
             console.info("[FreePDF ads] GPT initialized; requesting the documented sample test slot.");
         });
