@@ -655,8 +655,8 @@
                 throw new Error("No spreadsheet data was found.");
             }
 
-            const safeName = file.name.replace(/\.(xlsx|xls)$/i, "");
-            pdf.save(`${safeName}.pdf`);
+            const safeName = file.name.replace(/\.(xlsx|xls|csv)$/i, "");
+            return { blob: pdf.output("blob"), filename: `${safeName}.pdf` };
         }
     });
 })();
