@@ -561,7 +561,8 @@
                 ".xlsx"
             );
 
-            XLSX.writeFile(workbook, outputName);
+            const outputBytes = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+            return { blob: new Blob([outputBytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), filename: outputName };
         }
     });
 })();
